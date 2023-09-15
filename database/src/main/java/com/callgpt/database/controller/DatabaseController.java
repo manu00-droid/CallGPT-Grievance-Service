@@ -36,13 +36,15 @@ public class DatabaseController {
         try {
             Optional<User> userOptional = userService.getUserByPhoneNumber(phoneNumber);
             User user = userOptional.isPresent() ? userOptional.get() : new User(name, aadhaarNumber, phoneNumber, city, state);
+            if (userOptional.isEmpty()) userService.save(user);
             Complaint complaint = new Complaint(user, complaintDescription, department);
             complaintService.save(complaint);
             //call msg service
+
             return ResponseEntity.ok("User and Complaint saved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving data.");
         }
     }
-    
+
 }
