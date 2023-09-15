@@ -26,11 +26,13 @@ def answer_call(request):
 
 @api_view(['POST'])
 def handle_recording(request):
+    print(request.POST.get("From"))
     recording_url = request.POST.get("RecordingUrl")
+    phone_number = request.POST.get("From")
 
     resp = VoiceResponse()
-    success = sendRequest(recording_url)
-    if recording_url and success:
+    success = sendRequest(recording_url,phone_number)
+    if recording_url:
         resp.say("Thank you for your message. The recording has been received.")
     else:
         resp.say("No recording received.")
@@ -40,9 +42,10 @@ def handle_recording(request):
     )
 
 
-def sendRequest(url):
+def sendRequest(url,ph_no):
     data_to_send = {
         "url": url,
+        "phone_no":ph_no
     }
     response = requests.post(
         "https://cb6d-2401-4900-80b3-9fb7-f77b-6fe6-d59b-d08.ngrok-free.app/", data_to_send)
@@ -50,3 +53,10 @@ def sendRequest(url):
         return True
     else:
         return False
+    
+
+@api_view(['POST'])
+def confirm_message(request):
+    print(request.POST)
+    return HttpResponse("HI")
+
