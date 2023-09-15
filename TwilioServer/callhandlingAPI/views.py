@@ -4,7 +4,12 @@ from twilio.twiml.voice_response import VoiceResponse
 import twilio.rest
 import requests
 from django.http import JsonResponse
+from dotenv import load_dotenv
+import os
 
+dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
+load_dotenv(dotenv_path)
+LLMURL=os.environ.get("LLMURL")
 
 @api_view(['POST'])
 def answer_call(request):
@@ -47,8 +52,7 @@ def sendRequest(url,ph_no):
         "url": url,
         "phone_no":ph_no
     }
-    response = requests.post(
-        "https://cb6d-2401-4900-80b3-9fb7-f77b-6fe6-d59b-d08.ngrok-free.app/", data_to_send)
+    response = requests.post(LLMURL , data_to_send)
     if response.status_code == 200:
         return True
     else:
