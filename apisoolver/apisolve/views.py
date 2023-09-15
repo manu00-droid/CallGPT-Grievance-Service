@@ -1,6 +1,6 @@
-# from django.shortcuts import render
+
 import requests
-# Note: you need to be using OpenAI Python v0.27.0 for the code below to work
+
 import openai
 from icecream import ic
 import json
@@ -9,20 +9,18 @@ from django.http import HttpResponse
 import twilio.rest
 import os
 from dotenv import load_dotenv
-# from django.conf import settings as conf_settings
-# OAKEY=conf_settings.OAKEY
+
+
 dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
 ic(dotenv_path)
 load_dotenv(dotenv_path)
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 OAKEY=os.environ.get("OAKEY")
 
 openai.api_key = OAKEY
 asid=os.environ.get("asid")
 atoken=os.environ.get("auth_token")
-# client = twilio.rest.Client()
+
 ic(asid,atoken)
 client = twilio.rest.Client(asid, atoken)
 
@@ -39,8 +37,8 @@ def transcribe():
 def parse_unstructured_text(request):
     input_text=request.POST.get('data')
     ic(input_text)
-    # print(request)
-    # ic(input)
+    
+    
     prompt = f"""
             Following text is a transcript of a call recording from a client who wants to file a complaint which can be lodged to
             either electricity or water department of the caller's state government.
@@ -77,7 +75,7 @@ def parse_unstructured_text(request):
     except json.decoder.JSONDecodeError:
         j = None
         
-    # out = {"prompt": prompt, "output": response["choices"][0]["message"], "json": j, "response": response}
+    
     ic(j,type(j))
     return HttpResponse(json.dumps(j), content_type="application/json")
 
