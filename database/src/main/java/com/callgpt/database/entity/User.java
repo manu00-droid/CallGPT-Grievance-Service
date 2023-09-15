@@ -22,4 +22,11 @@ public class User {
     @Column(nullable = false, unique = true, length = 10)
     private String phoneNumber;
 
+    public User(String name, String aadhaarCard, String phoneNumber, String city, String state) {
+        this.name = name;
+        this.aadhaarCard = aadhaarCard;
+        this.phoneNumber = phoneNumber;
+        this.city = city;
+        this.state = state;
+    }
 }
