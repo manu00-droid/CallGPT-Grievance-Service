@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from twilio.twiml.voice_response import VoiceResponse
-import twilio.rest
+from twilio.rest import Client
 import requests
 from django.http import JsonResponse
 
@@ -57,6 +57,17 @@ def sendRequest(url,ph_no):
 
 @api_view(['POST'])
 def confirm_message(request):
-    print(request.POST)
-    return HttpResponse("HI")
+    # print(request.POST)
+    client = Client(account_sid, auth_token)
+    name = request.POST.get('name')
+    complaint_id = request.POST.get('complaint_id')
+    phone_no = request.POST.get('phone_no')
+    message = client.messages.create(
+        from_='+12565988912',
+        body= f'Hi {name} we have received your complaint with complaint-id {complaint_id}. We will get back soon !! Till then Chill',
+        to=phone_no
+    )
+    return HttpResponse()
+
+    # print(message.sid)
 
