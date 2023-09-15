@@ -9,8 +9,14 @@ import os
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
 load_dotenv(dotenv_path)
-LLMURL=os.environ.get("LLMURL")
 
+LLMURL=os.environ.get("LLMURL")
+asid=os.environ["asid"]
+auth_token=os.environ["auth_token"]
+api_key = os.environ["api_key"]
+api_secret = os.environ["api_secret"]
+client = Client(api_key,api_secret,asid)
+# accounts = client.api.v2010.accounts.list(limit=20)
 @api_view(['POST'])
 def answer_call(request):
 
@@ -62,12 +68,13 @@ def sendRequest(url,ph_no):
 @api_view(['POST'])
 def confirm_message(request):
     # print(request.POST)
-    client = Client(account_sid, auth_token)
+    # print(asid)
+    # print(auth_token)
     name = request.POST.get('name')
     complaint_id = request.POST.get('complaint_id')
     phone_no = request.POST.get('phone_no')
     message = client.messages.create(
-        from_='+12565988912',
+        from_='+12569739784',
         body= f'Hi {name} we have received your complaint with complaint-id {complaint_id}. We will get back soon !! Till then Chill',
         to=phone_no
     )
