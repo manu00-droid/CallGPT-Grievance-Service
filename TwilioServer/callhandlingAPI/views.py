@@ -5,10 +5,6 @@ import twilio.rest
 import requests
 from django.http import JsonResponse
 
-asid = "ACc773938691c59d16d13b0b8dacb3d461"
-auth = "51a05de4dac2fc81dc56d51432bbc641"
-client = twilio.rest.Client(asid, auth)
-
 
 @api_view(['POST'])
 def answer_call(request):
@@ -33,8 +29,8 @@ def handle_recording(request):
     recording_url = request.POST.get("RecordingUrl")
 
     resp = VoiceResponse()
-
-    if recording_url:
+    success = sendRequest(recording_url)
+    if recording_url and success:
         resp.say("Thank you for your message. The recording has been received.")
     else:
         resp.say("No recording received.")
@@ -42,3 +38,15 @@ def handle_recording(request):
     return HttpResponse(
         str(resp), content_type='application/xml; charset=utf-8'
     )
+
+
+def sendRequest(url):
+    data_to_send = {
+        "url": url,
+    }
+    response = requests.post(
+        "https://cb6d-2401-4900-80b3-9fb7-f77b-6fe6-d59b-d08.ngrok-free.app/", data_to_send)
+    if response.status_code == 200:
+        return True
+    else:
+        return False
