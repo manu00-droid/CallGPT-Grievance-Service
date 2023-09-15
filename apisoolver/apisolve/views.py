@@ -53,8 +53,9 @@ def parse_unstructured_text(request):
             - client_name
             - department in which complaint is to be lodged
             - brief description of complaint
-            - address (dict of full address, city, state)
+            - address (dict of full address, city, state,pincode(if available)))
             - adhaar card number (12 digits)
+            - phone number (10 digits)
             
             Valid JSON Output, omit fields that are not present:
               """
