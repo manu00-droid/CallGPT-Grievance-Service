@@ -84,15 +84,41 @@ def parse_unstructured_text(transcript,phone_number):
     # ic(j,type(j))
     requests.post(DBURL,json.dumps(j))
     return HttpResponse()
+### OLD FUNCTION
+# @api_view(['POST'])
+# def get_recording_url(request):
+#     path="a"
+#     r_url=request.POST.get('url')
+#     ic(r_url)
+#     requests.get(r_url)
+#     phone_number=request.POST.get('phone_no')
+#     transcribe(path,phone_number)
+
+
+save_directory = ""
 
 @api_view(['POST'])
 def get_recording_url(request):
-    path="a"
     r_url=request.POST.get('url')
+    m_no=request.POST.get('phone_no')
     ic(r_url)
-    requests.get(r_url)
-    phone_number=request.POST.get('phone_no')
-    transcribe(path,phone_number)
+    now=dt.datetime.now()
+
+    formatted_now = now.strftime("%Y%m%d%H%M%S")
+    output_file= os.path.join(save_directory, f"{formatted_now}_{m_no}.mp3")
+    # requests.get(r_url)
+    response = requests.get(r_url, auth=HTTPBasicAuth(asid, atoken))
+
+    # Check if the request was successful (HTTP status code 200)
+    if response.status_code == 200:
+        # Save the audio content to a file
+        with open(output_file, "wb") as file:
+            file.write(response.content)
+        print(f"Audio file downloaded")
+        transcribe(output_file, m_no)
+        os.remove(output_file)
+
+        return HttpResponse()
 
 
 
