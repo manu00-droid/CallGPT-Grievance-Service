@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
@@ -18,6 +19,8 @@ public class Complaint {
     private User user;
     private String description;
     private String department;
+    @ColumnDefault("in-progress")
+    private String status;
 
     public Complaint(User user, String complaintDescription, String department) {
         this.setUser(user);
