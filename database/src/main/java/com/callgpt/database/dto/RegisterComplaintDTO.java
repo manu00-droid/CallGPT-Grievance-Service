@@ -1,8 +1,6 @@
 package com.callgpt.database.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 public class RegisterComplaintDTO {
