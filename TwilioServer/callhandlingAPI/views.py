@@ -7,10 +7,11 @@ from django.http import JsonResponse
 from dotenv import load_dotenv
 import os
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
-load_dotenv(dotenv_path)
 
-LLMURL=os.environ.get("LLMURL")
+dotenv_path = os.path.join(os.path.dirname(__file__), '..\.env')
+load_dotenv(dotenv_path)
+print(dotenv_path)
+LLMURL=os.environ["LLMURL"]
 asid=os.environ["asid"]
 auth_token=os.environ["auth_token"]
 api_key = os.environ["api_key"]
@@ -21,7 +22,7 @@ client = Client(api_key,api_secret,asid)
 def answer_call(request):
 
     resp = VoiceResponse()
-    resp.say("Thank you for calling! Please leave your message after the tone and press 9 to end the call.")
+    resp.say("Thank you for calling! Please leave your message after the tone and press 9 to end the call.",language="hi-IN")
     resp.record(
         action='/handle-recording',
         method='POST',
@@ -39,6 +40,7 @@ def answer_call(request):
 def handle_recording(request):
     print(request.POST.get("From"))
     recording_url = request.POST.get("RecordingUrl")
+    print(recording_url)
     phone_number = request.POST.get("From")
 
     resp = VoiceResponse()
@@ -67,15 +69,11 @@ def sendRequest(url,ph_no):
 
 @api_view(['POST'])
 def confirm_message(request):
-    # print(request.POST)
-    # print(asid)
-    # print(auth_token)
-    name = request.POST.get('name')
-    complaint_id = request.POST.get('complaint_id')
-    phone_no = request.POST.get('phone_no')
+    body = request.POST.get("body")
+    phone_no = request.POST.get("phone_no")
     message = client.messages.create(
         from_='+12569739784',
-        body= f'Hi {name} we have received your complaint with complaint-id {complaint_id}. We will get back soon !! Till then Chill',
+        body= body,
         to=phone_no
     )
     return HttpResponse()
