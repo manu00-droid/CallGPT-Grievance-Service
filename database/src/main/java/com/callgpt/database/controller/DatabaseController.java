@@ -30,6 +30,7 @@ public class DatabaseController {
     @Autowired
     private ComplaintService complaintService;
 
+
     private static final String BASE_URI = "http://127.0.0.1:8083/translate/";
     private static WebClient webClient = WebClient.create(BASE_URI);
 
@@ -50,18 +51,21 @@ public class DatabaseController {
             Complaint complaint = new Complaint(user, complaintDescription, department);
             complaint = complaintService.save(complaint);
             //call msg service
-            DatabaseController.callSmsService(complaint.getCid(), language, phoneNumber);
+            DatabaseController.callSmsService(complaint, user);
             return ResponseEntity.ok("User and Complaint saved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving data.");
         }
     }
 
-    private static void callSmsService(Long cid, String language, String phoneNumber) {
+    private static void callSmsService(Complaint complaint, User user) {
         MultiValueMap<String, String> bodyValues = new LinkedMultiValueMap<>();
-        bodyValues.add("cid", String.valueOf(cid));
-        bodyValues.add("phoneNumber", phoneNumber);
-        bodyValues.add("language", language);
+        bodyValues.add("cid", String.valueOf(complaint.getCid()));
+        bodyValues.add("name", user.getName());
+        bodyValues.add("phoneNumber", user.getPhoneNumber());
+        bodyValues.add("department", complaint.getDepartment());
+        bodyValues.add("complaintDescription", complaint.getDescription());
+        bodyValues.add("language", user.getLanguage());
 
         webClient.post()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
