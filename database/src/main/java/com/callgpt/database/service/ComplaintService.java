@@ -2,7 +2,6 @@ package com.callgpt.database.service;
 
 import com.callgpt.database.entity.Complaint;
 import com.callgpt.database.repository.ComplaintRepository;
-import com.callgpt.database.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,7 @@ public class ComplaintService {
         this.complaintRepository = complaintRepository;
     }
 
-    public void save(Complaint complaint) {
-        complaintRepository.save(complaint);
+    public Complaint save(Complaint complaint) {
+        return complaintRepository.save(complaint);
     }
 }
