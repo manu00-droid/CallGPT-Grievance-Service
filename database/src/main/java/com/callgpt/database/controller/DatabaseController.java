@@ -20,16 +20,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.xml.crypto.Data;
 import java.util.Optional;
 
 @RestController
 public class DatabaseController {
-    @Autowired
     private UserService userService;
-
-    @Autowired
     private ComplaintService complaintService;
 
+    @Autowired
+    public DatabaseController(UserService userService, ComplaintService complaintService) {
+        this.userService = userService;
+        this.complaintService = complaintService;
+    }
 
     private static final String BASE_URI = "http://127.0.0.1:8083/translate/";
     private static WebClient webClient = WebClient.create(BASE_URI);
