@@ -6,6 +6,8 @@ from icecream import ic
 import json
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
+from requests.auth import HTTPBasicAuth
+import datetime as dt
 import twilio.rest
 import os
 from dotenv import load_dotenv
@@ -28,7 +30,7 @@ client = twilio.rest.Client(asid, atoken)
 
 def transcribe(path,pno):
     # path=request.POST.get('url')
-    audio_file = open("path", "rb")
+    audio_file = open(path, "rb")
     transcript = openai.Audio.transcribe("whisper-1", audio_file)
     # print("I AM HERE")
     print(transcript)
@@ -46,19 +48,22 @@ def parse_unstructured_text(transcript,phone_number):
             Following text is a transcript of a call recording from a client who wants to file a complaint which can be lodged to
             either electricity or water department of the caller's state government.
             and also given a phone number, add it to the json as well.
-            from the text given below, extract the following fields and parse it into a json, after converting them to english alphabets.
+            from the text given below, extract the following fields , and parse it into a json, after converting them to english alphabets.
             
             Input transcript: {input_text}
             phone Number:{phone_number}
             
             Fields:
             - client_name
-            - department in which complaint is to be lodged
-            - brief description of complaint
-            - address (dict of full address, city, state,pincode(if available)))
-            - adhaar card number (12 digits)
-            - phone number (10 digits)
-            - language used by caller
+            - department (in which complaint is to be lodged)
+            - complaint_description(brief description of complaint)
+            - full_address
+            - city
+            - state
+            - pincode(if available)))
+            - adhaar_card_number (12 digits)
+            - phone_number (10 digits)
+            - language (used by caller)
             
             Valid JSON Output, omit fields that are not present:
               """
@@ -79,23 +84,22 @@ def parse_unstructured_text(transcript,phone_number):
         j = json.loads(response["choices"][0]["message"]["content"])
     except json.decoder.JSONDecodeError:
         j = None
-        
+    headers={
+        'content_type':"application/json"
+    }
     
-    # ic(j,type(j))
-    requests.post(DBURL,json.dumps(j))
+    ic(j,type(j),json.dumps(j))
+    requests.post(DBURL,j,headers=headers)
+    ic("json sent to db")
     return HttpResponse()
-### OLD FUNCTION
-# @api_view(['POST'])
-# def get_recording_url(request):
-#     path="a"
-#     r_url=request.POST.get('url')
-#     ic(r_url)
-#     requests.get(r_url)
-#     phone_number=request.POST.get('phone_no')
-#     transcribe(path,phone_number)
 
 
-save_directory = ""
+
+
+
+save_directory = "./recordings"
+if not os.path.exists(save_directory):
+    os.makedirs(save_directory)
 
 @api_view(['POST'])
 def get_recording_url(request):
@@ -103,22 +107,32 @@ def get_recording_url(request):
     m_no=request.POST.get('phone_no')
     ic(r_url)
     now=dt.datetime.now()
+    output_directory = "../recordings"
 
     formatted_now = now.strftime("%Y%m%d%H%M%S")
-    output_file= os.path.join(save_directory, f"{formatted_now}_{m_no}.mp3")
-    # requests.get(r_url)
+
+# Ensure the output directory exists; create it if not
+    os.makedirs(output_directory, exist_ok=True)
+
+    # Specify the output file path within the directory
+    output_file = os.path.join(output_directory, f"{formatted_now}.mp3")
+
+    # Send an HTTP GET request with authentication
     response = requests.get(r_url, auth=HTTPBasicAuth(asid, atoken))
 
     # Check if the request was successful (HTTP status code 200)
     if response.status_code == 200:
-        # Save the audio content to a file
+        # Save the audio content to the specified file path
         with open(output_file, "wb") as file:
             file.write(response.content)
-        print(f"Audio file downloaded")
-        transcribe(output_file, m_no)
-        os.remove(output_file)
+        print(f"Audio file downloaded and saved as {output_file}")
+    else:
+        print(f"Failed to download audio. HTTP status code: {response.status_code}")
 
-        return HttpResponse()
+    transcribe(output_file, m_no)
+    os.remove(output_file)
+
+    return HttpResponse()
 
 
 
