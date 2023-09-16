@@ -33,9 +33,10 @@ public class DatabaseController {
         String state = request.getState();
         String complaintDescription = request.getComplaintDescription();
         String department = request.getDepartment();
+        String language = request.getLanguage();
         try {
             Optional<User> userOptional = userService.getUserByPhoneNumber(phoneNumber);
-            User user = userOptional.isPresent() ? userOptional.get() : new User(name, aadhaarNumber, phoneNumber, city, state);
+            User user = userOptional.isPresent() ? userOptional.get() : new User(name, aadhaarNumber, phoneNumber, city, state, language);
             if (userOptional.isEmpty()) userService.save(user);
             Complaint complaint = new Complaint(user, complaintDescription, department);
             complaintService.save(complaint);

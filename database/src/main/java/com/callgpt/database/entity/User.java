@@ -21,12 +21,15 @@ public class User {
     private String state;
     @Column(nullable = false, unique = true, length = 10)
     private String phoneNumber;
+    @Column(nullable = false)
+    private String language;
 
-    public User(String name, String aadhaarCard, String phoneNumber, String city, String state) {
-        this.name = name;
-        this.aadhaarCard = aadhaarCard;
-        this.phoneNumber = phoneNumber;
-        this.city = city;
-        this.state = state;
+    public User(String name, String aadhaarCard, String phoneNumber, String city, String state, String language) {
+        setName(name);
+        setAadhaarCard(aadhaarCard);
+        setLanguage(language);
+        setPhoneNumber(phoneNumber);
+        setCity(city);
+        setState(state);
     }
 }
