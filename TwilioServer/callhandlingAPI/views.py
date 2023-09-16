@@ -30,7 +30,12 @@ def answer_call(request):
         timeout='5',
         finishOnKey='9'
     )
-
+    resp.say("Thank you for your message. The recording has been received.")
+    resp.hangup()
+    
+   
+    # else:
+    #     resp.say("No recording received.")
     return HttpResponse(
         str(resp), content_type='application/xml; charset=utf-8'
     )
@@ -45,10 +50,8 @@ def handle_recording(request):
 
     resp = VoiceResponse()
     success = sendRequest(recording_url,phone_number)
-    if recording_url:
-        resp.say("Thank you for your message. The recording has been received.")
-    else:
-        resp.say("No recording received.")
+    
+    
 
     return HttpResponse(
         str(resp), content_type='application/xml; charset=utf-8'
@@ -76,7 +79,8 @@ def confirm_message(request):
         body= body,
         to=phone_no
     )
-    return HttpResponse()
+    print("Message Sent")
+    return HttpResponse("done")
 
     # print(message.sid)
 
