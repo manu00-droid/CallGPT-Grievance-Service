@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Data
@@ -16,11 +17,18 @@ public class Complaint {
     private Long cid;
     @ManyToOne
     @JoinColumn(name = "uid")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
     private String description;
     private String department;
-    @ColumnDefault("in-progress")
     private String status;
+
+    @PrePersist
+    public void prePersist() {
+        if (getStatus() == null) {
+            setStatus("in-progress");
+        }
+    }
 
     public Complaint(User user, String complaintDescription, String department) {
         this.setUser(user);

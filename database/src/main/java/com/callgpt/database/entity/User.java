@@ -19,7 +19,7 @@ public class User {
     private String aadhaarCard;
     private String city;
     private String state;
-    @Column(nullable = false, unique = true, length = 10)
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
     @Column(nullable = false)
     private String language;
